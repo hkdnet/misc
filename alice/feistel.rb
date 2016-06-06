@@ -1,6 +1,28 @@
 input   = "1001011110110010".freeze
 sub_key = "10101101"
 
+class Feistel
+  def initialize(count)
+    @count = count
+    @sub_keys = []
+  end
+
+  def crypt(input)
+    input = " #{input}" if input.odd?
+    
+  end
+
+  private
+
+  def split_two(text)
+    len = text.length
+    half = len / 2
+    left = text[0, half]
+    right = text[half, half]
+    [left, right]
+  end
+end
+
 def split_two(text)
   len = text.length
   half = len / 2
