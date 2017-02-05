@@ -9,6 +9,11 @@ class Tester
     s = Solver.new(input)
     actual = s.solve
     puts "  #{@no} #{expected == actual}"
+    unless expected == actual
+      puts expected
+      puts actual
+      raise "failed"
+    end
     @no += 1
   end
 

@@ -85,7 +85,7 @@ class Player
       end
     elsif now.idx == 2
       if nex.idx == 3
-        u = UnitManager.find_or_create(now.unit.x, now.unit.y + 1)
+        u = UnitManager.find_or_create(now.unit.x - 1, now.unit.y + 1)
         self.nex = Position.new(u, 1)
       elsif nex.idx == 1
         nex.idx = 3
@@ -160,6 +160,8 @@ class Player
   end
 
   def index
+    puts "--"
+    puts history
     history.index(now)
   end
 
@@ -177,10 +179,10 @@ class Solver
   def solve
     p = Player.new
     h, i = input.split('').each.with_index.find do |e, i|
-      break h, p.history.size if h = p.index
       case e
       when 'F'
         p.forward
+        break h, p.history.size if h = p.index
       when 'c'
         p.right
       when 'a'
@@ -188,7 +190,7 @@ class Solver
       end
       nil
     end
-    h ? "visited #{h} #{i}" : '-'
+    h ? "#{i},#{h}" : '-'
   end
 end
 
