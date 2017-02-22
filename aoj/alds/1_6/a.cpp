@@ -9,9 +9,9 @@ constexpr std::size_t MAX_LEN = 2000000;
 
 int main() {
     uint n;
-    std::unique_ptr<int[]> arr(new int[MAX_LEN]);
-    std::unique_ptr<int[]> sorted(new int[MAX_LEN]);
-    std::unique_ptr<int[]> count(new int[MAX + 1]);
+    auto arr = std::make_unique<int[]>(MAX_LEN);
+    auto sorted = std::make_unique<int[]>(MAX_LEN);
+    auto count = std::make_unique<int[]>(MAX + 1);
     scanf("%d", &n);
     std::cin.ignore();
     REP(i, n) scanf("%d", &arr[i]);
