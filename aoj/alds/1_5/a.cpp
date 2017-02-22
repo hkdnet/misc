@@ -36,9 +36,3 @@ int main(int argc, char const* argv[]) {
     }
     return 0;
 }
-/*
- * 5
- * 1 5 7 10 21
- * 8
- * 2 4 17 8 22 21 100 35
-*/
