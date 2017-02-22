@@ -1,16 +1,17 @@
 #include <iostream>
 #include <cstdio>
+#include <memory>
 
-# define REP(i, n) for(int i =0; i < n; i++)
+# define REP(i, n) for(auto i = 0u; i < n; i++)
 
-# define MAX 10000
-# define MAX_LEN 2000000
+constexpr std::size_t MAX = 10000;
+constexpr std::size_t MAX_LEN = 2000000;
 
-int arr[MAX_LEN];
-int sorted[MAX_LEN];
-int count[MAX + 1];
 int main() {
-    int n;
+    uint n;
+    std::unique_ptr<int[]> arr(new int[MAX_LEN]);
+    std::unique_ptr<int[]> sorted(new int[MAX_LEN]);
+    std::unique_ptr<int[]> count(new int[MAX + 1]);
     scanf("%d", &n);
     std::cin.ignore();
     REP(i, n) scanf("%d", &arr[i]);
