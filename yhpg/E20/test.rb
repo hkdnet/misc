@@ -8,11 +8,11 @@ lines.each.with_index(1) do |line, idx|
   solver = Solver.new
   actual = solver.solve(input)
   if actual != expected
-    binding.pry
-    ng_c += 1
     puts "#{idx}"
+    puts "input   : #{input}"
     puts "actual  : #{actual}"
     puts "expected: #{expected}"
+    ng_c += 1
   end
 end
 puts "NG: #{ng_c}"

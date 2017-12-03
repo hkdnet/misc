@@ -58,9 +58,9 @@ class Solver
       if f.last == t.last
         # [:v, 0, 2],
         # [1, 0] -> [2, 0]
-        !HWALL.include?([f, t].max)
-      else
         !VWALL.include?([f, t].max)
+      else
+        !HWALL.include?([f, t].max)
       end
     end
   end
