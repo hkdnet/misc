@@ -6,8 +6,8 @@ lines = DATA.read.split("\n")
 lines.each.with_index(1) do |line, idx|
   _, input, expected = line.match(/"(.+)", "(.+)"/).to_a
   solver = Solver.new
-  actuals = solver.solve(input)
-  if actuals.include? expected
+  actual = solver.solve(input)
+  if actual == expected
     puts "ok #{idx}"
   else
     puts "#{idx}"

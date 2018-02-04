@@ -1,7 +1,3 @@
-# 順番に引き金を引く
-# ハズレた場合、弾倉を回転させる
-# ただし、全員回転させかたに癖があり、常に同じ方向に同じだけ回転させる
-# 残弾が 0 になるまで続ける
 class Russian
   class Revolver
     attr_reader :pattern
@@ -95,14 +91,14 @@ class Russian
       end
       player_idx = (player_idx + 1) % @players.size
     end
-    @revolvers.select do |revolver|
+    @revolvers.find do |revolver|
       revolver.kill_all?(killed_player_ids)
-    end.map(&:pattern)
+    end
   end
 end
 class Solver
   def solve(input)
     @input = input
-    Russian.parse(input).exec
+    Russian.parse(input).exec.pattern
   end
 end
