@@ -2,9 +2,12 @@
 require 'pry'
 require_relative './solver.rb'
 
+$dbg = false
 ng_c = 0
 lines = DATA.read.split("\n")
 lines.each.with_index(1) do |line, idx|
+  # $dbg = true
+  # next unless idx == 7
   _, input, expected = line.match(/"(.+)", "(.+)"/).to_a
   solver = Solver.new
   actual = solver.solve(input)
