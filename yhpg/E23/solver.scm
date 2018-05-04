@@ -1,11 +1,18 @@
 (define (insns-length insns)
   (fold * 1 (map (lambda (insn) (if (equal? insn #\a) 4 5)) insns)))
 
+(define (insns-steps insns)
+  (let loop ([ls '(1)] [rev-insns (reverse insns)])
+    (if (null? rev-insns)
+      (cdr ls)
+      (let ((m (if (equal? #\a (car rev-insns)) 4 5)))
+        (loop (cons (* m (car ls)) ls) (cdr rev-insns))))))
+
 (define (solve input)
   (let ((arr (string-split input ",")))
     (let ((idx (string->number (car arr))) (insns (string->list (cadr arr))))
       (if (< (insns-length insns) idx)
-        "x" (deg->str (solve-deg insns (- idx 1) 0))))))
+        "x" (deg->str (solve-deg insns (- idx 1) 0 (insns-steps insns)))))))
 
 (define (deg->str deg)
   (if (= deg 0) "0"
@@ -18,17 +25,16 @@
 (define b-deg '(0 60 0 120 0))
 
 ; reutnrs (idx delta-deg)
-(define (next-env insn idx)
-  (if (equal? #\a insn)
-    (let ([q (quotient idx 4)] [r (modulo idx 4)])
-      `(,q ,(list-ref a-deg r)))
-    (let ((q (quotient idx 5)) [r (modulo idx 5)])
-      `(,q ,(list-ref b-deg r)))))
+(define (next-env insn idx step)
+  (let ([q (quotient idx step)] [r (modulo idx step)])
+    (if (equal? #\a insn)
+      `(,r ,(list-ref a-deg q))
+      `(,r ,(list-ref b-deg q)))))
 
-(define (solve-deg insns idx deg)
+(define (solve-deg insns idx deg steps)
   (if (null? (cdr insns))
     (if (equal? (car insns) #\a)
-      (list-ref a-deg idx 0) ; TODO あとでとる
-      (list-ref b-deg idx 0))
-    (let ((n (next-env (car insns) idx)))
-      (solve-deg (cdr insns) (car n) (normalize-deg (+ (cadr n) deg))))))
+      (normalize-deg (+ deg (list-ref a-deg idx 0))) ; TODO あとでとる
+      (normalize-deg (+ deg (list-ref b-deg idx 0))))
+    (let ((n (next-env (car insns) idx (car steps))))
+      (solve-deg (cdr insns) (car n) (normalize-deg (+ (cadr n) deg)) (cdr steps)))))
