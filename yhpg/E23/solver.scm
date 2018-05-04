@@ -5,7 +5,7 @@
   (let ((arr (string-split input ",")))
     (let ((idx (string->number (car arr))) (insns (string->list (cadr arr))))
       (if (< (insns-length insns) idx)
-        "x" (deg->str (solve-deg insns idx 0))))))
+        "x" (deg->str (solve-deg insns (- idx 1) 0))))))
 
 (define (deg->str deg)
   (if (= deg 0) "0"
