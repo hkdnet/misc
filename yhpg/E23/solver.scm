@@ -1,0 +1,2 @@
+(define (solve input)
+  "nya")
