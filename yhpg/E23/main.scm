@@ -5,7 +5,7 @@
   (if (not (null? cases))
     (let ((c (car cases)))
       (if (string=? (solve (car c)) (car (cdr c)))
-        (display "OK\n")
+        (display "ok\n")
         (display "NG\n"))
       (loop (cdr cases)))))
 
