@@ -24,7 +24,7 @@
 (define a-deg '(0 60 120 0))
 (define b-deg '(0 60 0 120 0))
 
-; reutnrs (idx delta-deg)
+; returns (idx delta-deg)
 (define (next-env insn idx step)
   (let ([q (quotient idx step)] [r (modulo idx step)])
     (if (equal? #\a insn)
