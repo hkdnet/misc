@@ -6,5 +6,5 @@
     (let ((c (car cases)))
       (let ([actual (solve (car c))] [expected (cadr c)])
         (if (not (equal? actual expected))
-          (display #"~num NG\n")))
+          (display #"~num NG actual: ~actual expected: ~expected\n")))
       (loop (cdr cases) (+ num 1)))))
