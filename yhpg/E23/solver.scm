@@ -3,8 +3,8 @@
 
 (define (insns-steps insns)
   (let loop ([ls '(1)] [rev-insns (reverse insns)])
-    (if (null? rev-insns)
-      (cdr ls)
+    (if (null? (cdr rev-insns))
+      ls
       (let ((m (if (equal? #\a (car rev-insns)) 4 5)))
         (loop (cons (* m (car ls)) ls) (cdr rev-insns))))))
 
