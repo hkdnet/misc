@@ -1,13 +1,12 @@
 (load "../util/parser.scm")
 (load "./solver.scm")
 
-(let loop ([cases (file->testdata "test.txt")])
+(let loop ([cases (file->testdata "test.txt")] [num 0])
   (if (not (null? cases))
     (let ((c (car cases)))
-      (if (string=? (solve (car c)) (car (cdr c)))
-        (display "ok\n")
-        (display "NG\n"))
-      (loop (cdr cases)))))
+      (if (not (string=? (solve (car c)) (car (cdr c))))
+        (display #"~num NG\n"))
+      (loop (cdr cases) (+ num 1)))))
 
 
 
