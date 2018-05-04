@@ -4,9 +4,7 @@
 (let loop ([cases (file->testdata "test.txt")] [num 0])
   (if (not (null? cases))
     (let ((c (car cases)))
-      (if (not (string=? (solve (car c)) (car (cdr c))))
-        (display #"~num NG\n"))
+      (let ([actual (solve (car c))] [expected (cadr c)])
+        (if (not (equal? actual expected))
+          (display #"~num NG\n")))
       (loop (cdr cases) (+ num 1)))))
-
-
-
