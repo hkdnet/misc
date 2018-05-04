@@ -34,7 +34,7 @@
 (define (solve-deg insns idx deg steps)
   (if (null? (cdr insns))
     (if (equal? (car insns) #\a)
-      (normalize-deg (+ deg (list-ref a-deg idx 0))) ; TODO あとでとる
-      (normalize-deg (+ deg (list-ref b-deg idx 0))))
+      (normalize-deg (+ deg (list-ref a-deg idx)))
+      (normalize-deg (+ deg (list-ref b-deg idx))))
     (let ((n (next-env (car insns) idx (car steps))))
       (solve-deg (cdr insns) (car n) (normalize-deg (+ (cadr n) deg)) (cdr steps)))))
