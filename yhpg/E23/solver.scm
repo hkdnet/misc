@@ -1,6 +1,9 @@
+(define (ca? c)
+  (equal? #\a c))
+
 (define (insns-steps insns)
   (fold (lambda(c acc)
-          (let ((m (if (equal? #\a c) 4 5)))
+          (let ((m (if (ca? c) 4 5)))
             (cons (* m (car acc)) acc))) '(1) (reverse insns)))
 
 (define (solve input)
@@ -24,13 +27,13 @@
 ; returns (idx delta-deg)
 (define (next-env insn idx step)
   (let ([q (quotient idx step)] [r (modulo idx step)])
-    (if (equal? #\a insn)
+    (if (ca? insn)
       `(,r ,(list-ref a-deg q))
       `(,r ,(list-ref b-deg q)))))
 
 (define (solve-deg insns idx deg steps)
   (if (null? (cdr insns))
-    (if (equal? (car insns) #\a)
+    (if (ca? (car insns))
       (+ deg (list-ref a-deg idx))
       (+ deg (list-ref b-deg idx)))
     (let ((n (next-env (car insns) idx (car steps))))
