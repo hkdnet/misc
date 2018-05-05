@@ -1,9 +1,7 @@
 (define (insns-steps insns)
-  (let loop ([ls '(1)] [rev-insns (reverse insns)])
-    (if (null? rev-insns)
-      ls
-      (let ((m (if (equal? #\a (car rev-insns)) 4 5)))
-        (loop (cons (* m (car ls)) ls) (cdr rev-insns))))))
+  (fold (lambda(c acc)
+          (let ((m (if (equal? #\a c) 4 5)))
+            (cons (* m (car acc)) acc))) '(1) (reverse insns)))
 
 (define (solve input)
   (let ((arr (string-split input ",")))
