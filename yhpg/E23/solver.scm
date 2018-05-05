@@ -1,9 +1,6 @@
-(define (insns-length insns)
-  (fold * 1 (map (lambda (insn) (if (equal? insn #\a) 4 5)) insns)))
-
 (define (insns-steps insns)
   (let loop ([ls '(1)] [rev-insns (reverse insns)])
-    (if (null? (cdr rev-insns))
+    (if (null? rev-insns)
       ls
       (let ((m (if (equal? #\a (car rev-insns)) 4 5)))
         (loop (cons (* m (car ls)) ls) (cdr rev-insns))))))
@@ -11,8 +8,9 @@
 (define (solve input)
   (let ((arr (string-split input ",")))
     (let ((idx (string->number (car arr))) (insns (string->list (cadr arr))))
-      (if (< (insns-length insns) idx)
-        "x" (deg->str (solve-deg insns (- idx 1) 0 (insns-steps insns)))))))
+      (let ((steps (insns-steps insns)))
+        (if (< (car steps) idx)
+          "x" (deg->str (solve-deg insns (- idx 1) 0 (cdr steps))))))))
 
 (define (deg->str deg)
   (if (= deg 0) "0"
