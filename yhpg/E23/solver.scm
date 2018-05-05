@@ -13,8 +13,9 @@
           "x" (deg->str (solve-deg insns (- idx 1) 0 (cdr steps))))))))
 
 (define (deg->str deg)
-  (if (= deg 0) "0"
-    (if (= deg 60) "+" "-")))
+  (let ((ndeg (normalize-deg deg)))
+    (if (= ndeg 0) "0"
+      (if (= ndeg 60) "+" "-"))))
 
 (define (normalize-deg deg)
   (modulo deg 180))
@@ -32,7 +33,7 @@
 (define (solve-deg insns idx deg steps)
   (if (null? (cdr insns))
     (if (equal? (car insns) #\a)
-      (normalize-deg (+ deg (list-ref a-deg idx)))
-      (normalize-deg (+ deg (list-ref b-deg idx))))
+      (+ deg (list-ref a-deg idx))
+      (+ deg (list-ref b-deg idx)))
     (let ((n (next-env (car insns) idx (car steps))))
-      (solve-deg (cdr insns) (car n) (normalize-deg (+ (cadr n) deg)) (cdr steps)))))
+      (solve-deg (cdr insns) (car n) (+ (cadr n) deg) (cdr steps)))))
