@@ -16,18 +16,29 @@ class Solver
       rank += 1
     end
     # 桁数確定
-    tmp = (0...rank).map { |e| e + '1'.ord }.map(&:chr).join.to_i(@b)
+
+    idx = 1
+    num = 1
+    nums = []
 
     loop do
-      # ここも count_for 使えるはずなんだけど
-      if incr?(tmp)
-        count += 1
-        break if count == @m
+      t_n = @b - 1 - num
+      t_k = rank - idx
+      tmp = count_for(n: t_n, k: t_k)
+      if count + tmp >= @m
+        nums << num
+        num += 1
+        idx += 1
+        break if nums.size == rank
+        next
       end
-      tmp += 1
+      count += tmp
+      num += 1
     end
 
-    tmp.to_s(@b)
+    nums.reverse.each.with_index.sum do |e, i|
+      (@b**i) * e
+    end.to_s(@b)
   end
 
   def count_for(n:, k:)
