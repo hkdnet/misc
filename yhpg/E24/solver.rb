@@ -1,4 +1,6 @@
 class Solver
+  CHARS = '0123456789abcdefghijklmnopqrstuvwxyz'.freeze
+
   def solve(input)
     @b, @m = input.split(',').map(&:to_i)
     rank = 1
@@ -36,9 +38,7 @@ class Solver
       num += 1
     end
 
-    nums.reverse.each.with_index.sum do |e, i|
-      (@b**i) * e
-    end.to_s(@b)
+    nums.map { |e| CHARS[e] }.join('')
   end
 
   def count_for(n:, k:)
