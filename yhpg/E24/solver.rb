@@ -42,9 +42,12 @@ class Solver
   def count_for(n:, k:)
     raise ArgumentError if k > n
 
-    ret = 1.0
+    ret = 1
     k.times do |i|
-      ret = ret * (n - i) / (k - i)
+      ret = ret * (n - i)
+    end
+    k.times do |i|
+      ret = ret / (k - i)
     end
     ret.to_i
   end
