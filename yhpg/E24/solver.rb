@@ -1,6 +1,4 @@
 class Solver
-  CHARS = '0123456789abcdefghijklmnopqrstuvwxyz'.freeze
-
   def solve(input)
     @b, @m = input.split(',').map(&:to_i)
     rank = 1
@@ -38,7 +36,7 @@ class Solver
       num += 1
     end
 
-    nums.map { |e| CHARS[e] }.join('')
+    nums.map { |e| e.to_s(36) }.join('')
   end
 
   def count_for(n:, k:)
