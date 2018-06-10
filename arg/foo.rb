@@ -7,10 +7,10 @@ class Foo
 
 
   def foo(_arg1 = FOO__ARG1, name: FOO__NAME)
-    unless _arg1.equal?(FOO__ARG1)
+    unless FOO__ARG1.equal?(_arg1)
       name = _arg1
     end
-    if name.equal?(FOO__NAME)
+    if FOO__NAME.equal?(name)
       raise ArgumentError
     end
 
