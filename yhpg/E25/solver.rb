@@ -1,5 +1,28 @@
 class Solver
-  def initialize
+  Pair = Struct.new(:x, :y) do
+    def add(other)
+      Pair.new(x + other.x, y + other.y)
+    end
+
+    def sub(other)
+      Pair.new(x - other.x, y - other.y)
+    end
+
+    def multi(s)
+      Pair.new(x * s, y * s)
+    end
+
+    def rotate270
+      Pair.new(-y, x)
+    end
+
+    def to_s
+      "(#{x},#{y})"
+    end
+
+    def size
+      Math.sqrt(x**2 + y**2)
+    end
   end
 
   def solve(input)
@@ -8,14 +31,14 @@ class Solver
     @h = h.to_i
     x, y = str.scan(/\d+/).map(&:to_i)
     answer = {}
-    s = [x, y]
+    s = Pair.new(x, y)
 
     @w.times do |sx|
       @h.times do |sy|
-        v = [sx - x, sy - y]
+        v = Pair.new(sx, sy).sub(s)
         ps = points(s, v)
         if ps.all? { |p| valid?(p) }
-          l = len_of(v)
+          l = v.size
           answer[l] ||= []
           answer[l] << ps
         end
@@ -24,26 +47,20 @@ class Solver
 
     m = answer.keys.max
     if answer[m].size == 1 && m != 0
-      answer[m].first.map { |p| "(#{p.first},#{p.last})" }.join(",")
+      answer[m].first.map(&:to_s).join(",")
     else
       '-'
     end
   end
 
-  def len_of(v)
-    Math.sqrt(v.first**2 + v.last**2)
-  end
-
   def valid?(p)
-    (0...@w).include?(p.first) && (0...@h).include?(p.last)
+    (0...@w).include?(p.x) && (0...@h).include?(p.y)
   end
 
   def points(s, v)
-    sx, sy = s
-    a, b = v
-    p1 = [sx + a, sy + b]
-    p2 = [p1.first - b, p1.last + a]
-    p3 = [p2.first - 2*a, p2.last - 2*b]
+    p1 = s.add(v)
+    p2 = p1.add(v.rotate270)
+    p3 = p2.sub(v.multi(2))
     [p1, p2, p3]
   end
 end
