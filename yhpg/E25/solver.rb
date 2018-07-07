@@ -32,15 +32,18 @@ class Solver
     x, y = str.scan(/\d+/).map(&:to_i)
     answer = {}
     s = Pair.new(x, y)
+    max_l = 0
 
     @w.times do |sx|
       @h.times do |sy|
         v = Pair.new(sx, sy).sub(s)
+        next if v.size < max_l
         ps = points(s, v)
         if ps.all? { |p| valid?(p) }
           l = v.size
           answer[l] ||= []
           answer[l] << ps
+          max_l = l if l > max_l
         end
       end
     end
