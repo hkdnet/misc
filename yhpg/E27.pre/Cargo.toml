@@ -1,0 +1,6 @@
+[package]
+name = "e27p"
+version = "0.1.0"
+authors = ["hkdnet <satoko.itse@gmail.com>"]
+
+[dependencies]
