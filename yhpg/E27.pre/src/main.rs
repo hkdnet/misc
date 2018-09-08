@@ -1,6 +1,6 @@
 use std::fmt;
 use std::char;
-use std::hash::{Hash, Hasher};
+use std::hash::Hasher;
 use std::iter::FromIterator;
 use std::collections::HashSet;
 
