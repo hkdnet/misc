@@ -10,7 +10,7 @@ struct Field {
 enum Direction { N, E, S, W, }
 
 impl Direction {
-    fn dir_flag(d: &Direction) -> i32 {
+    fn dir_flag(d: &Direction) -> i8 {
         match d {
             Direction::N => 0b0001,
             Direction::E => 0b0010,
@@ -24,7 +24,7 @@ struct RayResult {
     cur: (usize, usize),
     dir: Direction,
     stopped: bool,
-    passed: [[i32; 5]; 5],
+    passed: [[i8; 5]; 5],
 }
 
 fn coor_to_char(coor: (usize, usize)) -> char {
