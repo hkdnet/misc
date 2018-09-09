@@ -22,7 +22,7 @@ impl Direction {
 }
 
 struct RayResult {
-    from: (usize, usize),
+    cur: (usize, usize),
     dir: Direction,
     stopped: bool,
     passed: [[i32; 5]; 5],
@@ -46,7 +46,7 @@ impl Field {
 
     fn start(&self) -> Vec<char> {
         let mut res = RayResult {
-            from: self.y_idx,
+            cur: self.y_idx,
             dir: Direction::N,
             stopped: false,
             passed: [
@@ -81,15 +81,15 @@ impl Field {
 
     fn process(&self, mut res: RayResult) -> RayResult {
         let coor = match res.dir {
-            Direction::N => (res.from.0 as i32, res.from.1 as i32 - 1),
-            Direction::E => (res.from.0 as i32 + 1, res.from.1 as i32),
-            Direction::S => (res.from.0 as i32, res.from.1 as i32 + 1),
-            Direction::W => (res.from.0 as i32 - 1, res.from.1 as i32),
+            Direction::N => (res.cur.0 as i32, res.cur.1 as i32 - 1),
+            Direction::E => (res.cur.0 as i32 + 1, res.cur.1 as i32),
+            Direction::S => (res.cur.0 as i32, res.cur.1 as i32 + 1),
+            Direction::W => (res.cur.0 as i32 - 1, res.cur.1 as i32),
         };
         let oc = self.pick(coor.0, coor.1);
         if oc.is_none() {
             return RayResult {
-                from: res.from,
+                cur: res.cur,
                 dir: res.dir,
                 stopped: true,
                 passed: res.passed,
@@ -102,7 +102,7 @@ impl Field {
         let flag = Direction::dir_flag(&new_dir);
         if res.passed[new_y][new_x] & flag != 0 {
             return RayResult {
-                from: (new_x, new_y),
+                cur: (new_x, new_y),
                 dir: new_dir,
                 stopped: true,
                 passed: res.passed,
@@ -112,7 +112,7 @@ impl Field {
             res.passed[new_y][new_x] = res.passed[new_y][new_x] | flag;
         }
         return RayResult {
-            from: (new_x, new_y),
+            cur: (new_x, new_y),
             dir: new_dir,
             stopped: c == &Cell::X,
             passed: res.passed,
