@@ -1,6 +1,5 @@
 use std::fmt;
 use std::char;
-use std::hash::Hasher;
 use std::iter::FromIterator;
 
 struct Field {
@@ -11,16 +10,6 @@ struct Field {
 #[derive(Eq, PartialEq, Debug, Clone)]
 enum Direction { N, E, S, W, }
 
-impl std::hash::Hash for Direction {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        match self {
-            Direction::N => 0.hash(state),
-            Direction::E => 1.hash(state),
-            Direction::S => 2.hash(state),
-            Direction::W => 3.hash(state),
-        }
-    }
-}
 impl Direction {
     fn dir_flag(d: &Direction) -> i32 {
         match d {
