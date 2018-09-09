@@ -1,4 +1,3 @@
-use std::fmt;
 use std::char;
 use std::iter::FromIterator;
 
@@ -164,17 +163,6 @@ enum Cell {
     R, // 1: 「╱」という向きの鏡。
     L, // 0: 「╲」という向きの鏡。
     Y, // Y: あなた。
-}
-impl fmt::Display for Cell {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Cell::X => write!(f, "X"),
-            Cell::D => write!(f, "D"),
-            Cell::R => write!(f, "R"),
-            Cell::L => write!(f, "L"),
-            Cell::Y => write!(f, "Y"),
-        }
-    }
 }
 impl Cell {
     fn reflect(c: &Cell, dir: Direction) -> Direction {
