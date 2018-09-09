@@ -11,12 +11,7 @@ struct Field {
 }
 
 #[derive(Eq, PartialEq, Debug, Clone)]
-enum Direction {
-    N,
-    E,
-    S,
-    W,
-}
+enum Direction { N, E, S, W, }
 
 impl std::hash::Hash for Direction {
     fn hash<H: Hasher>(&self, state: &mut H) {
