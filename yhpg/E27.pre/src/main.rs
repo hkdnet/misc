@@ -2,9 +2,7 @@ use std::fmt;
 use std::char;
 use std::hash::Hasher;
 use std::iter::FromIterator;
-use std::collections::HashSet;
 
-type History = HashSet<((usize, usize), Direction)>;
 struct Field {
     f: [[Cell; 5]; 5],
     y_idx: (usize, usize),
@@ -38,7 +36,6 @@ struct RayResult {
     from: (usize, usize),
     dir: Direction,
     stopped: bool,
-    path: History,
     passed: [[i32; 5]; 5],
 }
 
@@ -63,7 +60,6 @@ impl Field {
             from: self.y_idx,
             dir: Direction::N,
             stopped: false,
-            path: HashSet::new(),
             passed: [
                 [0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0],
@@ -72,7 +68,6 @@ impl Field {
                 [0, 0, 0, 0, 0],
             ],
         };
-        res.path.insert((self.y_idx, Direction::N));
         res.passed[self.y_idx.1][self.y_idx.0] = res.passed[self.y_idx.1][self.y_idx.0] | Direction::dir_flag(&Direction::N);
 
         let mut f = res.stopped;
@@ -109,7 +104,6 @@ impl Field {
                 from: res.from,
                 dir: res.dir,
                 stopped: true,
-                path: res.path,
                 passed: res.passed,
             }
         }
@@ -117,35 +111,22 @@ impl Field {
         let new_dir = Cell::reflect(c, res.dir);
         let new_x = coor.0 as usize;
         let new_y = coor.1 as usize;
-        let new_path_elm = ((new_x, new_y), new_dir.clone());
-        if res.path.contains(&new_path_elm) {
-            return RayResult {
-                from: (new_x, new_y),
-                dir: new_dir,
-                stopped: true,
-                path: res.path,
-                passed: res.passed,
-            }
-        }
         let flag = Direction::dir_flag(&new_dir);
         if res.passed[new_y][new_x] & flag != 0 {
             return RayResult {
                 from: (new_x, new_y),
                 dir: new_dir,
                 stopped: true,
-                path: res.path,
                 passed: res.passed,
             }
         }
         if c != &Cell::X {
-            res.path.insert(new_path_elm.clone());
             res.passed[new_y][new_x] = res.passed[new_y][new_x] | flag;
         }
         return RayResult {
             from: (new_x, new_y),
             dir: new_dir,
             stopped: c == &Cell::X,
-            path: res.path,
             passed: res.passed,
         }
     }
