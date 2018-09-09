@@ -70,13 +70,6 @@ fn coor_to_char(coor: (usize, usize)) -> char {
 }
 
 impl Field {
-    fn set(&mut self, cell: Cell, x: usize, y: usize) {
-        if cell == Cell::Y {
-            self.start_at = (x, y);
-        }
-        self.f[y][x] = cell;
-    }
-
     fn start(&self) -> Vec<char> {
         let mut res = RayResult {
             cur: self.start_at,
@@ -182,7 +175,10 @@ impl From<String> for Field {
                     'Y' => Cell::Y,
                     _ => panic!("Invalid input: {}", str),
                 };
-                field.set(cell, x, y);
+                if cell == Cell::Y {
+                    field.start_at = (x, y);
+                }
+                field.f[y][x] = cell;
             };
         }
 
