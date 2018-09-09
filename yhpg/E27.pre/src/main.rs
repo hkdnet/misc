@@ -12,10 +12,10 @@ enum Direction { N, E, S, W, }
 impl Direction {
     fn dir_flag(d: &Direction) -> i32 {
         match d {
-            Direction::N => 1,
-            Direction::E => 2,
-            Direction::S => 4,
-            Direction::W => 8,
+            Direction::N => 0b0001,
+            Direction::E => 0b0010,
+            Direction::S => 0b0100,
+            Direction::W => 0b1000,
         }
     }
 }
