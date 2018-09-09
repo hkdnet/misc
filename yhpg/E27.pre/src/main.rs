@@ -3,7 +3,7 @@ use std::iter::FromIterator;
 
 struct Field {
     f: [[Cell; 5]; 5],
-    y_idx: (usize, usize),
+    start_at: (usize, usize),
 }
 
 #[derive(Eq, PartialEq, Debug)]
@@ -38,14 +38,14 @@ fn coor_to_char(coor: (usize, usize)) -> char {
 impl Field {
     fn set(&mut self, cell: Cell, x: usize, y: usize) {
         if cell == Cell::Y {
-            self.y_idx = (x, y);
+            self.start_at = (x, y);
         }
         self.f[y][x] = cell;
     }
 
     fn start(&self) -> Vec<char> {
         let mut res = RayResult {
-            cur: self.y_idx,
+            cur: self.start_at,
             dir: Direction::N,
             stopped: false,
             passed: [
@@ -56,7 +56,7 @@ impl Field {
                 [0, 0, 0, 0, 0],
             ],
         };
-        res.passed[self.y_idx.1][self.y_idx.0] = res.passed[self.y_idx.1][self.y_idx.0] | Direction::dir_flag(&Direction::N);
+        res.passed[self.start_at.1][self.start_at.0] = res.passed[self.start_at.1][self.start_at.0] | Direction::dir_flag(&Direction::N);
 
         let mut f = res.stopped;
         while !f {
@@ -136,7 +136,7 @@ impl From<String> for Field {
                 [Cell::X, Cell::X, Cell::X, Cell::X, Cell::X],
                 [Cell::X, Cell::X, Cell::X, Cell::X, Cell::X],
             ],
-            y_idx: (0, 0)
+            start_at: (0, 0)
         };
         for (y, row_str) in row_strs.enumerate() {
             for (x, c) in row_str.chars().enumerate() {
