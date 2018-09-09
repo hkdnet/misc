@@ -70,7 +70,7 @@ fn coor_to_char(coor: (usize, usize)) -> char {
 }
 
 impl Field {
-    fn start(&self) -> Vec<char> {
+    fn start(&self) -> String {
         let mut res = RayResult {
             cur: self.start_at,
             dir: Direction::N,
@@ -102,7 +102,7 @@ impl Field {
 
             }
         }
-        return vec
+        return String::from_iter(vec)
     }
 
     fn process(&self, mut res: RayResult) -> RayResult {
@@ -188,8 +188,7 @@ impl From<String> for Field {
 
 fn solve(input: &str) -> String {
     let field = Field::from(input.to_string());
-    let tmp = field.start();
-    return String::from_iter(tmp)
+    return field.start();
 }
 fn test(input: &str, expected: &str) {
     let actual = solve(input);
