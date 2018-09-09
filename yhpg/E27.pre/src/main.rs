@@ -66,7 +66,6 @@ impl Field {
             f = res.stopped;
         }
 
-
         let mut vec = Vec::new();
         for (y, r) in res.passed.iter().enumerate() {
             for (x, f) in r.iter().enumerate() {
