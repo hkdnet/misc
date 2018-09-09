@@ -23,12 +23,23 @@ impl std::hash::Hash for Direction {
         }
     }
 }
+impl Direction {
+    fn dir_flag(d: &Direction) -> i32 {
+        match d {
+            Direction::N => 1,
+            Direction::E => 2,
+            Direction::S => 4,
+            Direction::W => 8,
+        }
+    }
+}
 
 struct RayResult {
     from: (usize, usize),
     dir: Direction,
     stopped: bool,
     path: History,
+    passed: [[i32; 5]; 5],
 }
 
 fn coor_to_char(coor: (usize, usize)) -> char {
@@ -47,14 +58,23 @@ impl Field {
         self.f[y][x] = cell;
     }
 
-    fn start(&self) -> History {
+    fn start(&self) -> Vec<char> {
         let mut res = RayResult {
             from: self.y_idx,
             dir: Direction::N,
             stopped: false,
             path: HashSet::new(),
+            passed: [
+                [0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0],
+            ],
         };
         res.path.insert((self.y_idx, Direction::N));
+        res.passed[self.y_idx.1][self.y_idx.0] = res.passed[self.y_idx.1][self.y_idx.0] | Direction::dir_flag(&Direction::N);
+
         let mut f = res.stopped;
         while !f {
             // println!("now: ({}, {})", res.from.0, res.from.1);
@@ -62,7 +82,18 @@ impl Field {
             f = res.stopped;
         }
 
-        return res.path
+
+        let mut vec = Vec::new();
+        for (y, r) in res.passed.iter().enumerate() {
+            for (x, f) in r.iter().enumerate() {
+                if f != &0 {
+                    let c = coor_to_char((x, y));
+                    vec.push(c)
+                }
+
+            }
+        }
+        return vec
     }
 
     fn process(&self, mut res: RayResult) -> RayResult {
@@ -79,28 +110,43 @@ impl Field {
                 dir: res.dir,
                 stopped: true,
                 path: res.path,
+                passed: res.passed,
             }
         }
         let c = oc.unwrap();
         let new_dir = Cell::reflect(c, res.dir);
-        let new_from = (coor.0 as usize, coor.1 as usize);
-        let new_path_elm = (new_from, new_dir.clone());
+        let new_x = coor.0 as usize;
+        let new_y = coor.1 as usize;
+        let new_path_elm = ((new_x, new_y), new_dir.clone());
         if res.path.contains(&new_path_elm) {
             return RayResult {
-                from: new_from,
+                from: (new_x, new_y),
                 dir: new_dir,
                 stopped: true,
                 path: res.path,
+                passed: res.passed,
+            }
+        }
+        let flag = Direction::dir_flag(&new_dir);
+        if res.passed[new_y][new_x] & flag != 0 {
+            return RayResult {
+                from: (new_x, new_y),
+                dir: new_dir,
+                stopped: true,
+                path: res.path,
+                passed: res.passed,
             }
         }
         if c != &Cell::X {
             res.path.insert(new_path_elm.clone());
+            res.passed[new_y][new_x] = res.passed[new_y][new_x] | flag;
         }
         return RayResult {
-            from: new_from,
+            from: (new_x, new_y),
             dir: new_dir,
             stopped: c == &Cell::X,
             path: res.path,
+            passed: res.passed,
         }
     }
 
@@ -188,10 +234,7 @@ fn solve(input: &str) -> String {
         };
     }
 
-    let mut tmp = field.start().into_iter().map(|h| coor_to_char(h.0))
-        .collect::<HashSet<char>>()
-        .into_iter().collect::<Vec<char>>();
-    tmp.sort_by(|a, b| a.cmp(b));
+    let tmp = field.start();
     return String::from_iter(tmp)
 }
 fn test(input: &str, expected: &str) {
