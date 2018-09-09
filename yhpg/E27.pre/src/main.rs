@@ -126,7 +126,7 @@ impl Field {
         let new_x = coor.0 as usize;
         let new_y = coor.1 as usize;
         let flag = Direction::dir_flag(&new_dir);
-        if res.passed[new_y][new_x] & flag != 0 {
+        if res.passed[new_y][new_x] & flag != 0 || c == &Cell::X {
             return RayResult {
                 cur: (new_x, new_y),
                 dir: new_dir,
@@ -134,13 +134,11 @@ impl Field {
                 passed: res.passed,
             }
         }
-        if c != &Cell::X {
-            res.passed[new_y][new_x] = res.passed[new_y][new_x] | flag;
-        }
+        res.passed[new_y][new_x] = res.passed[new_y][new_x] | flag;
         return RayResult {
             cur: (new_x, new_y),
             dir: new_dir,
-            stopped: c == &Cell::X,
+            stopped: false,
             passed: res.passed,
         }
     }
