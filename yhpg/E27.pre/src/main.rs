@@ -126,6 +126,36 @@ impl Field {
         return None
     }
 }
+impl From<String> for Field {
+    fn from(str: String) -> Self {
+        let row_strs = str.split("/");
+        let mut field = Field {
+            f: [
+                [Cell::Y, Cell::X, Cell::X, Cell::X, Cell::X],
+                [Cell::X, Cell::X, Cell::X, Cell::X, Cell::X],
+                [Cell::X, Cell::X, Cell::X, Cell::X, Cell::X],
+                [Cell::X, Cell::X, Cell::X, Cell::X, Cell::X],
+                [Cell::X, Cell::X, Cell::X, Cell::X, Cell::X],
+            ],
+            y_idx: (0, 0)
+        };
+        for (y, row_str) in row_strs.enumerate() {
+            for (x, c) in row_str.chars().enumerate() {
+                let cell = match c {
+                    'x' => Cell::X,
+                    '.' => Cell::D,
+                    '1' => Cell::R,
+                    '0' => Cell::L,
+                    'Y' => Cell::Y,
+                    _ => panic!("Invalid input: {}", str),
+                };
+                field.set(cell, x, y);
+            };
+        }
+
+        return field
+    }
+}
 
 #[derive(PartialEq, Debug)]
 enum Cell {
@@ -172,37 +202,8 @@ impl Cell {
     }
 }
 
-
-fn new_field() -> Field {
-    Field {
-        f: [
-            [Cell::Y, Cell::X, Cell::X, Cell::X, Cell::X],
-            [Cell::X, Cell::X, Cell::X, Cell::X, Cell::X],
-            [Cell::X, Cell::X, Cell::X, Cell::X, Cell::X],
-            [Cell::X, Cell::X, Cell::X, Cell::X, Cell::X],
-            [Cell::X, Cell::X, Cell::X, Cell::X, Cell::X],
-        ],
-        y_idx: (0, 0)
-    }
-}
 fn solve(input: &str) -> String {
-    let row_strs = input.split("/");
-    let mut field = new_field();
-
-    for (y, row_str) in row_strs.enumerate() {
-        for (x, c) in row_str.chars().enumerate() {
-            let cell = match c {
-                'x' => Cell::X,
-                '.' => Cell::D,
-                '1' => Cell::R,
-                '0' => Cell::L,
-                'Y' => Cell::Y,
-                _ => panic!("Invalid input: {}", input),
-            };
-            field.set(cell, x, y);
-        };
-    }
-
+    let field = Field::from(input.to_string());
     let tmp = field.start();
     return String::from_iter(tmp)
 }
