@@ -1,14 +1,123 @@
 use std::fmt;
 use std::char;
+use std::hash::Hasher;
 use std::iter::FromIterator;
+use std::collections::HashSet;
 
+type History = HashSet<((usize, usize), Direction)>;
 struct Field {
     f: [[Cell; 5]; 5],
-    passed: [[i32; 5]; 5],
     y_idx: (usize, usize),
 }
 
-#[derive(PartialEq, Debug, Clone)]
+#[derive(Eq, PartialEq, Debug, Clone)]
+enum Direction {
+    N,
+    E,
+    S,
+    W,
+}
+
+impl std::hash::Hash for Direction {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        match self {
+            Direction::N => 0.hash(state),
+            Direction::E => 1.hash(state),
+            Direction::S => 2.hash(state),
+            Direction::W => 3.hash(state),
+        }
+    }
+}
+
+struct RayResult {
+    from: (usize, usize),
+    dir: Direction,
+    stopped: bool,
+    path: History,
+}
+
+fn coor_to_char(coor: (usize, usize)) -> char {
+    let idx = coor.0 + coor.1 * 5;
+    match char::from_digit(10 + idx as u32, 36) {
+        Some(s) => return s,
+        None => panic!("Cannot convert coor: ({}, {})", coor.0, coor.1),
+    }
+}
+
+impl Field {
+    fn set(&mut self, cell: Cell, x: usize, y: usize) {
+        if cell == Cell::Y {
+            self.y_idx = (x, y);
+        }
+        self.f[y][x] = cell;
+    }
+
+    fn start(&self) -> History {
+        let mut res = RayResult {
+            from: self.y_idx,
+            dir: Direction::N,
+            stopped: false,
+            path: HashSet::new(),
+        };
+        res.path.insert((self.y_idx, Direction::N));
+        let mut f = res.stopped;
+        while !f {
+            // println!("now: ({}, {})", res.from.0, res.from.1);
+            res = self.process(res);
+            f = res.stopped;
+        }
+
+        return res.path
+    }
+
+    fn process(&self, mut res: RayResult) -> RayResult {
+        let coor = match res.dir {
+            Direction::N => (res.from.0 as i32, res.from.1 as i32 - 1),
+            Direction::E => (res.from.0 as i32 + 1, res.from.1 as i32),
+            Direction::S => (res.from.0 as i32, res.from.1 as i32 + 1),
+            Direction::W => (res.from.0 as i32 - 1, res.from.1 as i32),
+        };
+        let oc = self.pick(coor.0, coor.1);
+        if oc.is_none() {
+            return RayResult {
+                from: res.from,
+                dir: res.dir,
+                stopped: true,
+                path: res.path,
+            }
+        }
+        let c = oc.unwrap();
+        let new_dir = Cell::reflect(c, res.dir);
+        let new_from = (coor.0 as usize, coor.1 as usize);
+        let new_path_elm = (new_from, new_dir.clone());
+        if res.path.contains(&new_path_elm) {
+            return RayResult {
+                from: new_from,
+                dir: new_dir,
+                stopped: true,
+                path: res.path,
+            }
+        }
+        if c != &Cell::X {
+            res.path.insert(new_path_elm.clone());
+        }
+        return RayResult {
+            from: new_from,
+            dir: new_dir,
+            stopped: c == &Cell::X,
+            path: res.path,
+        }
+    }
+
+    fn pick(&self, x: i32, y: i32) -> Option<&Cell> {
+        if x >= 0 && x < 5 && y >= 0 && y < 5 {
+            return Some(&self.f[y as usize][x as usize])
+        }
+        return None
+    }
+}
+
+#[derive(PartialEq, Debug)]
 enum Cell {
     X, // x: 光を吸収するマス。
     D, // .: なにもないマス。光を通す。
@@ -28,8 +137,8 @@ impl fmt::Display for Cell {
     }
 }
 impl Cell {
-    fn reflect(c: Cell, dir: Direction) -> Direction {
-        if c == Cell::R {
+    fn reflect(c: &Cell, dir: Direction) -> Direction {
+        if c == &Cell::R {
             // println!("reflect by {}", c);
             // R == /
             return match dir {
@@ -38,7 +147,7 @@ impl Cell {
                 Direction::S => Direction::W,
                 Direction::W => Direction::S,
             }
-        } else if c == Cell::L {
+        } else if c == &Cell::L {
             // println!("reflect by {}", c);
             // L == \
             return match dir {
@@ -53,123 +162,6 @@ impl Cell {
     }
 }
 
-#[derive(Eq, PartialEq, Debug, Clone)]
-enum Direction {
-    N,
-    E,
-    S,
-    W,
-}
-
-struct RayResult {
-    from: (usize, usize),
-    dir: Direction,
-    stopped: bool,
-}
-
-fn coor_to_char(coor: (usize, usize)) -> char {
-    let idx = coor.0 + coor.1 * 5;
-    match char::from_digit(10 + idx as u32, 36) {
-        Some(s) => return s,
-        None => panic!("Cannot convert coor: ({}, {})", coor.0, coor.1),
-    }
-}
-
-impl Field {
-    fn set(&mut self, cell: Cell, x: usize, y: usize) {
-        if cell == Cell::Y {
-            self.y_idx = (x, y);
-        }
-        self.f[y][x] = cell;
-    }
-
-    fn start(&mut self) {
-        let mut res = RayResult {
-            from: self.y_idx,
-            dir: Direction::N,
-            stopped: false,
-        };
-        self.pass(self.y_idx, Direction::N);
-        let mut f = res.stopped;
-        while !f {
-            // println!("now: ({}, {})", res.from.0, res.from.1);
-            res = self.process(res);
-            f = res.stopped;
-        }
-    }
-
-    fn pass(&mut self, coor: (usize, usize), dir: Direction) {
-        let f = match dir {
-            Direction::N => 1,
-            Direction::E => 2,
-            Direction::S => 4,
-            Direction::W => 8,
-        };
-        self.passed[coor.1][coor.0] = self.passed[coor.1][coor.0] | f;
-    }
-
-    fn passed(&self, coor: (usize, usize), dir: Direction) -> bool {
-        let f = match dir {
-            Direction::N => 1,
-            Direction::E => 2,
-            Direction::S => 4,
-            Direction::W => 8,
-        };
-        return self.passed[coor.1][coor.0] & f != 0;
-    }
-
-    fn passed_coors(self) -> Vec<(usize, usize)> {
-        let mut ret = Vec::new();
-
-        for (y, r) in self.passed.iter().enumerate() {
-            for (x, c) in r.iter().enumerate() {
-                if c != &0 {
-                    ret.push((x, y));
-                }
-            };
-        }
-
-        return ret
-    }
-
-    fn process(&mut self, res: RayResult) -> RayResult {
-        let coor = match res.dir {
-            Direction::N => (res.from.0 as i32, res.from.1 as i32 - 1),
-            Direction::E => (res.from.0 as i32 + 1, res.from.1 as i32),
-            Direction::S => (res.from.0 as i32, res.from.1 as i32 + 1),
-            Direction::W => (res.from.0 as i32 - 1, res.from.1 as i32),
-        };
-        let x = coor.0;
-        let y = coor.1;
-        if x >= 0 && x < 5 && y >= 0 && y < 5 {
-            let c = &self.f[y as usize][x as usize];
-            let new_dir = Cell::reflect(c.clone(), res.dir);
-            let new_from = (coor.0 as usize, coor.1 as usize);
-            if self.passed(new_from, new_dir.clone()) {
-                return RayResult {
-                    from: new_from,
-                    dir: new_dir,
-                    stopped: true,
-                }
-            }
-            if c != &Cell::X {
-                self.pass(new_from, new_dir.clone());
-            }
-            return RayResult {
-                from: new_from,
-                dir: new_dir,
-                stopped: c == &Cell::X,
-            }
-        } else {
-            return RayResult {
-                from: res.from,
-                dir: res.dir,
-                stopped: true,
-            }
-        }
-    }
-}
-
 
 fn new_field() -> Field {
     Field {
@@ -179,13 +171,6 @@ fn new_field() -> Field {
             [Cell::X, Cell::X, Cell::X, Cell::X, Cell::X],
             [Cell::X, Cell::X, Cell::X, Cell::X, Cell::X],
             [Cell::X, Cell::X, Cell::X, Cell::X, Cell::X],
-        ],
-        passed: [
-            [0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0],
         ],
         y_idx: (0, 0)
     }
@@ -208,8 +193,10 @@ fn solve(input: &str) -> String {
         };
     }
 
-    field.start();
-    let tmp = field.passed_coors().into_iter().map(|h| coor_to_char(h));
+    let mut tmp = field.start().into_iter().map(|h| coor_to_char(h.0))
+        .collect::<HashSet<char>>()
+        .into_iter().collect::<Vec<char>>();
+    tmp.sort_by(|a, b| a.cmp(b));
     return String::from_iter(tmp)
 }
 fn test(input: &str, expected: &str) {
