@@ -7,7 +7,7 @@ struct Field {
     y_idx: (usize, usize),
 }
 
-#[derive(Eq, PartialEq, Debug, Clone)]
+#[derive(Eq, PartialEq, Debug)]
 enum Direction { N, E, S, W, }
 
 impl Direction {
