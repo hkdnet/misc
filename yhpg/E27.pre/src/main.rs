@@ -1,6 +1,40 @@
 use std::char;
 use std::iter::FromIterator;
 
+#[derive(PartialEq, Debug)]
+enum Cell {
+    X, // x: 光を吸収するマス。
+    D, // .: なにもないマス。光を通す。
+    R, // 1: 「╱」という向きの鏡。
+    L, // 0: 「╲」という向きの鏡。
+    Y, // Y: あなた。
+}
+impl Cell {
+    fn reflect(c: &Cell, dir: Direction) -> Direction {
+        if c == &Cell::R {
+            // println!("reflect by {}", c);
+            // R == /
+            return match dir {
+                Direction::N => Direction::E,
+                Direction::E => Direction::N,
+                Direction::S => Direction::W,
+                Direction::W => Direction::S,
+            }
+        } else if c == &Cell::L {
+            // println!("reflect by {}", c);
+            // L == \
+            return match dir {
+                Direction::N => Direction::W,
+                Direction::E => Direction::S,
+                Direction::S => Direction::E,
+                Direction::W => Direction::N,
+            }
+        } else {
+            dir
+        }
+    }
+}
+
 struct Field {
     f: [[Cell; 5]; 5],
     start_at: (usize, usize),
@@ -153,40 +187,6 @@ impl From<String> for Field {
         }
 
         return field
-    }
-}
-
-#[derive(PartialEq, Debug)]
-enum Cell {
-    X, // x: 光を吸収するマス。
-    D, // .: なにもないマス。光を通す。
-    R, // 1: 「╱」という向きの鏡。
-    L, // 0: 「╲」という向きの鏡。
-    Y, // Y: あなた。
-}
-impl Cell {
-    fn reflect(c: &Cell, dir: Direction) -> Direction {
-        if c == &Cell::R {
-            // println!("reflect by {}", c);
-            // R == /
-            return match dir {
-                Direction::N => Direction::E,
-                Direction::E => Direction::N,
-                Direction::S => Direction::W,
-                Direction::W => Direction::S,
-            }
-        } else if c == &Cell::L {
-            // println!("reflect by {}", c);
-            // L == \
-            return match dir {
-                Direction::N => Direction::W,
-                Direction::E => Direction::S,
-                Direction::S => Direction::E,
-                Direction::W => Direction::N,
-            }
-        } else {
-            dir
-        }
     }
 }
 
