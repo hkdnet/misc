@@ -22,7 +22,7 @@ class Solver
 
   private
 
-  def sequence?(n, cards)
+  def sequence_of(n, cards)
     ranks = cards.group_by(&:rank).flat_map do |_, cs|
       cs.sort_by(&:suit).each_cons(n).select do |t|
         t.each_cons(2).all? { |a, b| a.suit + 1 == b.suit }
@@ -42,7 +42,7 @@ class Solver
     n, *next_pattern = pattern
 
 
-    sequence?(n, rest)&.any? do |cards|
+    sequence_of(n, rest)&.any? do |cards|
       _solve(next_pattern, rest - cards)
     end
   end
