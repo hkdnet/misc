@@ -39,12 +39,16 @@ class Solver
   def sequence_of(n, cards)
     ranks = cards.group_by(&:rank).flat_map do |_, cs|
       cs.sort_by(&:suit).each_cons(n).select do |t|
-        t.each_cons(2).all? { |a, b| a.suit + 1 == b.suit }
+        t.map(&:suit).tap do |tmp|
+          break tmp.max - tmp.min + 1 == tmp.size
+        end
       end
     end
     suits = cards.group_by(&:suit).flat_map do |_, cs|
       cs.sort_by(&:rank).each_cons(n).select do |t|
-        t.each_cons(2).all? { |a, b| a.rank + 1 == b.rank }
+        t.map(&:rank).tap do |tmp|
+          break tmp.max - tmp.min + 1 == tmp.size
+        end
       end
     end
     return nil if ranks.empty? && suits.empty?
