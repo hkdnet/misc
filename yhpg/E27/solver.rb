@@ -9,18 +9,32 @@ class Solver
       Card.new(suit, rank)
     end
 
-    return '49' if _solve([8], @cards)
-    return '26' if _solve([6, 2], @cards)
-    return '20' if _solve([5, 3], @cards)
-    return '18' if _solve([4, 4], @cards)
-    return '11' if _solve([4, 2, 2], @cards)
-    return '9' if _solve([3, 3, 2], @cards)
-    return '4' if _solve([2, 2, 2, 2], @cards)
+    patterns = [
+      [8],
+      [6, 2],
+      [5, 3],
+      [4, 4],
+      [4, 2, 2],
+      [3, 3, 2],
+      [2, 2, 2, 2],
+    ]
+
+    patterns.each do |pattern|
+      if _solve(pattern, @cards)
+        return point(pattern).to_s
+      end
+    end
 
     '-'
   end
 
   private
+
+  def point(pattern)
+    pattern.reduce(0) do |acc, n|
+      acc + (n - 1)**2
+    end
+  end
 
   def sequence_of(n, cards)
     ranks = cards.group_by(&:rank).flat_map do |_, cs|
