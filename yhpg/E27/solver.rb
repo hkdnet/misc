@@ -19,7 +19,7 @@ class Solver
       [2, 2, 2, 2],
     ]
 
-    patterns.each do |pattern|
+    patterns.sort_by { |e| -point(e) }.each do |pattern|
       if _solve(pattern, @cards)
         return point(pattern).to_s
       end
