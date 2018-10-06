@@ -8,63 +8,14 @@ class Solver
       rank = card[1].ord - '0'.ord
       Card.new(suit, rank)
     end
-    return '49' if sequence?(8, @cards)
 
-    if tmp = sequence?(6, @cards)
-      tmp.each do |candidates|
-        rests = @cards - candidates
-        return '26' if sequence?(2, rests)
-      end
-    end
-
-    if tmp = sequence?(5, @cards)
-      tmp.each do |candidates|
-        rests = @cards - candidates
-        return '20' if sequence?(3, rests)
-      end
-    end
-
-    if tmp = sequence?(4, @cards)
-      tmp.each do |candidates|
-        rests = @cards - candidates
-        return '18' if sequence?(4, rests)
-        if tmp2 = sequence?(2, rests)
-          tmp2.each do |cs|
-            r = rests - cs
-            return '11' if sequence?(2, r)
-          end
-        end
-      end
-    end
-
-    if tmp = sequence?(3, @cards)
-      tmp.each do |candidates|
-        rests = @cards - candidates
-        if tmp2 = sequence?(3, rests)
-          tmp2.each do |cs|
-            r = rests - cs
-            return '9' if sequence?(2, r)
-          end
-        end
-      end
-    end
-
-    if tmp = sequence?(2, @cards)
-      tmp.each do |candidates|
-        rests = @cards - candidates
-        if tmp2 = sequence?(2, rests)
-          tmp2.each do |cs|
-            r = rests - cs
-            if tmp3 = sequence?(2, r)
-              tmp3.each do |cs2|
-                r2 = r - cs2
-                return '4' if sequence?(2, r2)
-              end
-            end
-          end
-        end
-      end
-    end
+    return '49' if _solve([8], @cards)
+    return '26' if _solve([6, 2], @cards)
+    return '20' if _solve([5, 3], @cards)
+    return '18' if _solve([4, 4], @cards)
+    return '11' if _solve([4, 2, 2], @cards)
+    return '9' if _solve([3, 3, 2], @cards)
+    return '4' if _solve([2, 2, 2, 2], @cards)
 
     '-'
   end
@@ -84,5 +35,15 @@ class Solver
     end
     return nil if ranks.empty? && suits.empty?
     ranks + suits
+  end
+
+  def _solve(pattern, rest)
+    return true if pattern.empty?
+    n, *next_pattern = pattern
+
+
+    sequence?(n, rest)&.any? do |cards|
+      _solve(next_pattern, rest - cards)
+    end
   end
 end
