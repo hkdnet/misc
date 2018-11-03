@@ -70,10 +70,7 @@ class Solver
       Instruction.new(s[0].to_sym, s[1].to_i)
     end
 
-    # n 回目の操作のときの base size
-    sizes = []
     @insns.each do |insn|
-      sizes << @base
       @w *= insn.size
       @h *= insn.size
       if insn.dir == :N || insn.dir == :S
@@ -89,7 +86,6 @@ class Solver
 
     n = 1
 
-    tmp_base = @base
     @insns.each.with_index do |insn, i|
       minw = board.min_w
       maxw = board.max_w
