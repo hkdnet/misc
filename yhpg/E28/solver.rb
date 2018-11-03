@@ -36,8 +36,14 @@ class Solver
       @min_h = y1 if y1 < min_h
       @max_h = y2 if y2 > max_h
 
-      x1.upto(x2-1) do |x|
+      [x1, x2-1].each do |x|
         y1.upto(y2-1) do |y|
+          @board[x] ||= {}
+          @board[x][y] = num
+        end
+      end
+      [y1, y2-1].each do |y|
+        x1.upto(x2-1) do |x|
           @board[x] ||= {}
           @board[x][y] = num
         end
