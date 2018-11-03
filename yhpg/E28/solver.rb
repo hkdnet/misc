@@ -7,9 +7,7 @@ class Solver
 
   class Board
     attr_reader :min_w, :max_w, :min_h, :max_h
-    def initialize(w, h)
-      @w = w
-      @h = h
+    def initialize
       @board = {}
       @min_w = 0
       @max_w = 0
@@ -65,8 +63,6 @@ class Solver
 
   def initialize
     @base = 1 # base_size
-    @w = 1
-    @h = 1
   end
 
   def solve(input)
@@ -77,17 +73,10 @@ class Solver
     end
 
     @insns.each do |insn|
-      @w *= insn.size
-      @h *= insn.size
-      if insn.dir == :N || insn.dir == :S
-        @h += @base
-      else
-        @w += @base
-      end
       @base *= insn.size
     end
 
-    board = Board.new(@w, @h)
+    board = Board.new
     board.rect(1, 0, @base, 0, @base)
 
     n = 1
