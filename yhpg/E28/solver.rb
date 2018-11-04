@@ -18,11 +18,11 @@ class Solver
     end
 
     def v_match?(other)
-      !((x1...x2).to_a & (other.x1...other.x2).to_a).empty?
+      !((x2 - 1) < other.x1 || (other.x2 - 1) < x1)
     end
 
     def h_match?(other)
-      !((y1...y2).to_a & (other.y1...other.y2).to_a).empty?
+      !((y2 - 1) < other.y1 || (other.y2 - 1) < y1)
     end
   end
 
