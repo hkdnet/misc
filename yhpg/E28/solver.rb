@@ -1,7 +1,5 @@
 #http://nabetani.sakura.ne.jp/hena/orde28sqst/
 
-require 'set'
-
 class Solver
   Instruction = Struct.new(:dir, :size)
   Sq = Struct.new(:num, :x1, :x2, :y1, :y2) do
