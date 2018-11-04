@@ -6,14 +6,13 @@ ng_c = 0
 lines = DATA.read.split("\n")
 lines.each.with_index(0) do |line, idx|
   # $dbg = true
-  # next if idx != 5
+  # next if idx != 0
   _, input, expected = line.match(/"(.+)", "(.+)"/).to_a
   solver = Solver.new
   actual = solver.solve(input)
   if actual == expected
     puts "ok #{idx}"
   else
-    solver.debug
     puts "#{idx}"
     puts "input   : #{input}"
     puts "actual  : #{actual}"
