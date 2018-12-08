@@ -23,6 +23,8 @@ const (
 var slashByte, dQuoteByte, sQuoteByte byte
 var validChars = []byte("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\"'/")
 
+const noAnswer = "-"
+
 type result struct {
 	output string
 	err    error
@@ -41,15 +43,15 @@ func solve(input string) result {
 	for l.Next() {
 		token, err := l.NextToken()
 		if err != nil {
-			return result{output: "-", err: err}
+			return result{output: noAnswer, err: err}
 		}
 		tokens = append(tokens, token)
 	}
 	if l.mode != normal {
-		return result{output: "-", err: errors.New("unterminated quote")}
+		return result{output: noAnswer, err: errors.New("unterminated quote")}
 	}
 	if len(tokens) == 0 {
-		return result{output: "-", err: errors.New("no entries")}
+		return result{output: noAnswer, err: errors.New("no entries")}
 	}
 	output := strings.Join(tokens, ",")
 	return result{output: output, err: nil}
