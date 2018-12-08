@@ -21,11 +21,20 @@ const (
 	doubleQuote
 )
 
+var slashByte, dQuoteByte, sQuoteByte byte
+
 var validChar = regexp.MustCompile("[A-Za-z0-9\"'/]")
 
 type result struct {
 	output string
 	err    error
+}
+
+func init() {
+	tmp := "/\"'"
+	slashByte = tmp[0]
+	dQuoteByte = tmp[1]
+	sQuoteByte = tmp[2]
 }
 
 func solve(input string) result {
@@ -67,13 +76,13 @@ loop:
 		if !validChar.Match([]byte{c}) {
 			return "", fmt.Errorf("invalid char: %v", string(c))
 		}
-		switch string(c) {
-		case "/":
+		switch c {
+		case slashByte:
 			if l.mode == normal {
 				if l.cur+1 == len(l.text) { // 終わり
 					return "", errors.New("should not end with /")
 				}
-				if string(l.text[l.cur+1]) == "/" {
+				if l.text[l.cur+1] == slashByte {
 					// スラッシュ2個のパターン
 					ret = append(ret, c)
 					l.cur += 2
@@ -86,7 +95,7 @@ loop:
 				l.cur++
 				ret = append(ret, c)
 			}
-		case "\"":
+		case dQuoteByte:
 			if l.mode == normal {
 				l.mode = doubleQuote
 				l.cur++
@@ -97,7 +106,7 @@ loop:
 				l.cur++
 				ret = append(ret, c)
 			}
-		case "'":
+		case sQuoteByte:
 			if l.mode == normal {
 				l.mode = singleQuote
 				l.cur++
