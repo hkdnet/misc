@@ -20,7 +20,12 @@ const (
 	doubleQuote
 )
 
-var slashByte, dQuoteByte, sQuoteByte byte
+const (
+	slashByte  = '/'
+	dQuoteByte = '"'
+	sQuoteByte = '\''
+)
+
 var validChars = []byte("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\"'/")
 
 const noAnswer = "-"
@@ -28,13 +33,6 @@ const noAnswer = "-"
 type result struct {
 	output string
 	err    error
-}
-
-func init() {
-	tmp := "/\"'"
-	slashByte = tmp[0]
-	dQuoteByte = tmp[1]
-	sQuoteByte = tmp[2]
 }
 
 func solve(input string) result {
