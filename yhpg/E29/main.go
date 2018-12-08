@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"regexp"
 	"strings"
 )
 
@@ -22,8 +21,7 @@ const (
 )
 
 var slashByte, dQuoteByte, sQuoteByte byte
-
-var validChar = regexp.MustCompile("[A-Za-z0-9\"'/]")
+var validChars = []byte("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\"'/")
 
 type result struct {
 	output string
@@ -64,6 +62,15 @@ func (l *lexer) Next() bool {
 	return true
 }
 
+func isValidByte(b byte) bool {
+	for _, bb := range validChars {
+		if b == bb {
+			return true
+		}
+	}
+	return false
+}
+
 func (l *lexer) NextToken() (string, error) {
 	var ret []byte
 	beg := l.cur
@@ -73,7 +80,7 @@ loop:
 			return "", errors.New("idx")
 		}
 		c := l.text[l.cur]
-		if !validChar.Match([]byte{c}) {
+		if !isValidByte(c) {
 			return "", fmt.Errorf("invalid char: %v", string(c))
 		}
 		switch c {
