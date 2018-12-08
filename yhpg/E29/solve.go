@@ -1,4 +1,4 @@
-package main
+package e29
 
 import (
 	"errors"
