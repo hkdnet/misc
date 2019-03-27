@@ -12,22 +12,6 @@ def read_i
   gets.chomp.split(' ').map(&:to_i)
 end
 
-# [次の数値, xor する値, 次につかう bin]
-def next_num(n, limit, bin)
-  return [nil, nil, nil] if n > limit
-
-  if n == bin
-    nbin = bin * 2
-    if limit >= nbin - 1
-      # ショートカット
-      # 2^n - 1 までは足したので次は 2^n になるはず
-      return [nbin, 1, nbin]
-    end
-  end
-
-  [n+1, n, bin]
-end
-
 def next_bin(n)
   bin = 1
   loop do
@@ -43,50 +27,88 @@ end
 def f(a, b)
   bin1 = next_bin(a)
   bin2 = prev_bin(b)
-  puts "bin1 #{bin1}"
-  puts "bin2 #{bin2}"
   return naive(a, b) if bin1 >= bin2
   ln = naive(a, bin1 - 1)
   rn = naive(bin2, b)
-  puts "ln #{ln} <- naive(#{a}, #{bin1 - 1})"
-  puts "rn #{rn} <- naive(#{bin2}, #{b})"
   ans = ln ^ rn
-  loop do
-    break if bin1 == bin2
-    ans = ans^1
-    bin1 *= 2
-
-    puts "loop #{bin1} -> #{bin2}"
-  end
+  ans = ans ^ 1 if bin1 == 2
   ans
 end
 
-def assert(a, b)
-  puts "-----"
-  puts "a: #{a}, b: #{b}"
-  an = naive(a, b)
-  af = f(a, b)
-  puts "naive: #{an}, f: #{af}"
-  if an != af
-    raise 'mismatch'
+def ff(a, b)
+  bs = []
+  b.to_s(2).size.times do |rank|
+    arr = [0] * 2**rank + [1] * 2**rank
+    arr = arr * 2
+    a_idx = a % arr.size
+    b_idx = b % arr.size
+    if b_idx < a_idx
+      b_idx += arr.size
+      arr = arr * 2
+    end
+    ans = 0
+    arr.each_with_index do |e, idx|
+      if a_idx <= idx && idx <= b_idx
+        ans = ans ^ e
+      end
+    end
+    bs << ans
   end
+  bs.reverse.join('').to_i(2)
 end
 
-# # puts naive(*read_i)
-puts "=="
-puts naive(2, 3)
-puts naive(8, 15)
-puts "=="
-assert(2, 3)
-assert(2, 7)
-assert(2, 15)
+def fff(a, b)
+  bs = b.to_s(2).size.times.map do |rank|
+    period_size = 2**(rank+2)
+    a_idx = a % period_size
+    b_idx = b % period_size
+    if b_idx < a_idx
+      b_idx += period_size
+    end
 
-assert(1, 10000)
-assert(1, 1000000)
-assert(123, 456)
+    # rank == 0: 01010101
+    # rank == 1: 00110011
+    cnt = 0
+    zz_size = 2**rank
+    a_idx.upto(b_idx) do |n|
+      cnt += 1 if (n / zz_size) % 2 != 0
+    end
+    cnt % 2
+  end
+  bs.reverse.join('').to_i(2)
+end
 
+def check(a, b)
+  a2 = ff(a, b)
+  a3 = fff(a, b)
+  puts "#{a2 == a3 ? :ok : :ng}: ff = #{a2} <-> fff = #{a3}"
+end
 
-# ans
-# a, b = read_i
-# puts f(a, b)
-
+check(4, 7)
+check(5, 8)
+check(6, 9)
+check(7, 10)
+check(8, 11)
+a, b = read_i
+puts fff(a, b)
+#
+# 0.upto(15).each do |e|
+#   puts 'a:  %09d' % e.to_s(2)
+# end
+#
+# 000000000
+# 000000001
+# 000000010
+# 000000011
+# 000000100
+# 000000101
+# 000000110 <--
+# 000000111
+# 000001000
+# 000001001 <--
+# 000001010
+# 000001011
+# 000001100
+# 000001101
+# 000001110
+# 000001111
