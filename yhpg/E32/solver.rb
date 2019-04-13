@@ -10,6 +10,7 @@ class Solver
       end
     end
 
+    @max_rank = 0
     input.split('/').each.with_index do |s, rank|
       n = 2 ** rank
       l, t, r, b = s.chars.map { |e| e.to_i(36) }
@@ -18,7 +19,10 @@ class Solver
           f[x][y] += n
         end
       end
+      @max_rank = rank if rank > @max_rank
     end
+
+    normalize(f)
 
     areas = {}
 
@@ -44,5 +48,39 @@ class Solver
   end
 
   def show
+  end
+
+  def normalize(f)
+    return f
+
+    t = {}
+
+    0.upto(35) do |x|
+      0.upto(35) do |y|
+        t[y] ||= []
+        t[y][x] = f[x][y]
+      end
+    end
+
+
+    0.upto(35) do |x|
+      found = []
+      tmp = f[x][0]
+      found << tmp
+      replace = {}
+      0.upto(35) do |y|
+        e = f[x][y]
+        if e == tmp
+          next
+        end
+
+        if found.include?(e)
+          @max_rank += 1
+          replace[e] = 2 ** @max_rank
+        else
+          found << e
+        end
+      end
+    end
   end
 end
