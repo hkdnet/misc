@@ -7,32 +7,33 @@ object Main {
       println(solve(input).trim());
     }
   }
-  type Chunk = (Char, Int)
 
   def solve(input: String): String = {
     val arr = input.split("\n")
     val tmp = arr(0).split(" ").map(_.toInt)
     val k = tmp(1)
-    val t = arr(1).toCharArray.foldLeft((0, List.empty[Int], '2'))((acc, c) => {
-      val (cnt, arr, prevChar) = acc
-      if (prevChar == c) (cnt + 1, arr, c) else (1, cnt::arr, c)
-    })
-    val lens = if (arr(1).charAt(arr(1).length-1) == '1') {
-      (t._1::t._2)
-    } else {
-      0 :: (t._1::t._2)
+    val t = arr(1).toCharArray.foldLeft((0, '2', List.empty[Int])){
+      case ((cnt, prev, arr), c) =>
+        if (prev == c) (cnt + 1, c, arr)
+        else (1, c, cnt::arr)
     }
-    val chunk = lens.zipWithIndex.foldLeft((0, List.empty[Int]))((acc, t) => {
-      val (c, arr) = acc
-      val (count, index) = t
-      if (index % 2 == 0) (count, arr) else (0, (c+count)::arr)
+    val lens = if (arr(1).charAt(arr(1).length - 1) == '1') {
+      (t._1 :: t._3)
+    } else {
+      0 :: (t._1 :: t._3)
+    }
+    val chunk = lens.zipWithIndex.foldLeft((0, List.empty[Int]))({
+      case ((c, arr), (count, index)) => {
+        if (index % 2 == 0) (count, arr) else (0, (c + count) :: arr)
+      }
     })._2
-    val max = chunk.zipWithIndex.foldLeft(chunk.take(k).sum)((max, t) => {
-      val (count, index) = t
-      if (index + k >= chunk.length) max
-      else {
-        val tmp = max - chunk(index) + chunk(index + k)
-        if (tmp > max) tmp else max
+    val max = chunk.zipWithIndex.foldLeft(chunk.take(k).sum)({
+      case (max, (count, index)) => {
+        if (index + k >= chunk.length) max
+        else {
+          val tmp = max - chunk(index) + chunk(index + k)
+          if (tmp > max) tmp else max
+        }
       }
     })
     return max.toString
@@ -41,16 +42,8 @@ object Main {
   val tests = List(
     """5 1
       |00010""".stripMargin -> "4",
-    """5 2
-      |00010""".stripMargin -> "5",
-    """6 1
-      |000101""".stripMargin -> "4",
-    """6 2
-      |000101""".stripMargin -> "6",
     """14 2
       |11101010110011""".stripMargin -> "8",
-    """15 2
-      |111010101100110""".stripMargin -> "8",
     """1 1
       |1""".stripMargin -> "1");
 
