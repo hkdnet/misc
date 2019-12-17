@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+
+n = 10**5
+m = 10**5
+
+puts "#{n} #{m}"
+
+(1..5).each do |a|
+  20000.times do |n|
+    b = 10000 + n
+    puts "#{a} #{b}"
+  end
+end
