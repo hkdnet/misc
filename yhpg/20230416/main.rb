@@ -19,12 +19,10 @@ class Solver
 
     input.each.with_index do |s, idx|
       enum = Enumerator.new do |yielder|
-        loop do
-          (0..).each do |k|
-            (0..k).each do |x|
-              y = k - x
-              yielder << [x, y] if b[x][y].nil?
-            end
+        (0..).each do |k|
+          (0..k).each do |x|
+            y = k - x
+            yielder << [x, y] if b[x][y].nil?
           end
         end
       end
