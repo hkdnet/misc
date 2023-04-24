@@ -17,9 +17,18 @@ class Solver
 
     sqs = [] # (size, (x, y))
 
+    k_by_size = {}
+
     input.each.with_index do |s, idx|
       enum = Enumerator.new do |yielder|
-        (0..).each do |k|
+        init_k = 0
+        s.downto(0) do |ss|
+          if k_by_size[ss]
+            init_k = k_by_size[ss]
+            break
+          end
+        end
+        (init_k..).each do |k|
           (0..k).each do |x|
             y = k - x
             yielder << [x, y] if b[x][y].nil?
@@ -36,6 +45,8 @@ class Solver
           end
         end
         next if not_ok
+
+        k_by_size[s] = x + y
 
         s.times do |dx|
           s.times do |dy|
