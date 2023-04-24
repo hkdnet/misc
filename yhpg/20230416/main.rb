@@ -32,11 +32,8 @@ class Solver
       loop do
         x, y = enum.next
 
-        puts "candidate is (#{x}, #{y})"
-
         not_ok = (x..x + s - 1).any? do |xx|
           (y..y + s - 1).any? do |yy|
-            puts "testing (#{xx}, #{yy}) for #{s}"
             !b[xx][yy].nil?
           end
         end
@@ -51,30 +48,21 @@ class Solver
         sqs << [s, [x, y]]
         break
       end
-
-      #       print_board b
     end
-    print_board b
 
     s, arr = sqs.max
-    puts "the largest is #{s}"
     x, y = arr
-    puts "located at (#{x}, #{y})"
     adj_idx = Set.new
-    puts 'gathering'
     [y - 1, y + s].each do |yy|
       (x..x + s - 1).each do |xx|
-        p [xx, yy, b[xx][yy]]
         adj_idx << b[xx][yy] if b[xx][yy]
       end
     end
     [x - 1, x + s].each do |xx|
       (y..y + s - 1).each do |yy|
-        p [xx, yy, b[xx][yy]]
         adj_idx << b[xx][yy] if b[xx][yy]
       end
     end
-    p adj_idx
 
     adj_idx.map { |idx| input[idx] }.sort.join(',')
   end
